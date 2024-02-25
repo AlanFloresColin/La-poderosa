@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+
+#define PI 3.14159265
+
+void calcularFuerza(float magnitud, float angulo, char direccion[], float *fuerza_x, float *fuerza_y) {
+    // Ajustar el ángulo según la dirección seleccionada
+    angulo += (strcmp(direccion, "derecha hacia arriba") == 0) ? 0 :
+              (strcmp(direccion, "izquierda hacia arriba") == 0) ? 90 :
+              (strcmp(direccion, "izquierda hacia abajo") == 0) ? 180 : 270;
+
+    // Convertir el ángulo de grados a radianes
+    float angulo_radianes = angulo * PI / 180;
+
+    // Calcular las componentes x e y de la fuerza
+    *fuerza_x = magnitud * cos(angulo_radianes);
+    *fuerza_y = magnitud * sin(angulo_radianes);
+}
+
+int main() {
+    int num_fuerzas;
+    do {
+        printf("Ingrese la cantidad de fuerzas (minimo 2): ");
+        scanf("%d", &num_fuerzas);
+    } while (num_fuerzas < 2);
+
+    float magnitudes[num_fuerzas];
+    float angulos[num_fuerzas];
+    char direcciones[num_fuerzas][50];
+    float fuerzas_x[num_fuerzas];
+    float fuerzas_y[num_fuerzas];
+
+    for (int i = 0; i < num_fuerzas; ++i) {
+        printf("Ingrese la magnitud de la fuerza %d: ", i + 1);
+        scanf("%f", &magnitudes[i]);
+        printf("Ingrese el angulo de la fuerza %d en grados: ", i + 1);
+        scanf("%f", &angulos[i]);
+        printf("Elija la direccion de la fuerza %d:\n", i + 1);
+        printf("1. Derecha hacia arriba (+x)\n");
+        printf("2. Izquierda hacia arriba (-x)\n");
+        printf("3. Izquierda hacia abajo (+y)\n");
+        printf("4. Derecha hacia abajo (-y)\n");
+        printf("Ingrese el numero correspondiente: ");
+        int opcion;
+        scanf("%d", &opcion);
+        switch (opcion) {
+            case 1:
+                strcpy(direcciones[i], "derecha hacia arriba");
+                break;
+            case 2:
+                strcpy(direcciones[i], "izquierda hacia arriba");
+                break;
+            case 3:
+                strcpy(direcciones[i], "izquierda hacia abajo");
+                break;
+            case 4:
+                strcpy(direcciones[i], "derecha hacia abajo");
+                break;
+            default:
+                printf("Opcion invalida.\n");
+                return 1;
+        }
+        calcularFuerza(magnitudes[i], angulos[i], direcciones[i], &fuerzas_x[i], &fuerzas_y[i]);
+    }
+
+    for (int i = 0; i < num_fuerzas; ++i) {
+        printf("La fuerza %d tiene direccion hacia %s y componentes: x = %.2f, y = %.2f\n", i + 1, direcciones[i], fuerzas_x[i], fuerzas_y[i]);
+    }
+
+    // Calcular la fuerza resultante del sistema
+    float fuerza_resultante_x = 0, fuerza_resultante_y = 0;
+    for (int i = 0; i < num_fuerzas; ++i) {
+        fuerza_resultante_x += fuerzas_x[i];
+        fuerza_resultante_y += fuerzas_y[i];
+    }
+
+    // Calcular la magnitud y el ángulo de la fuerza resultante
+    float magnitud_resultante = sqrt(pow(fuerza_resultante_x, 2) + pow(fuerza_resultante_y, 2));
+    float angulo_resultante = atan2(fuerza_resultante_y, fuerza_resultante_x) * 180 / PI;
+
+    // Mostrar la fuerza resultante del sistema
+    printf("\nLa fuerza resultante del sistema tiene una magnitud de %.2f y un angulo de %.2f grados.\n", magnitud_resultante, angulo_resultante);
+
+    return 0;
+}
